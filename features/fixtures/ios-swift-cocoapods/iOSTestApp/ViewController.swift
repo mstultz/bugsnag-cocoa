@@ -19,6 +19,16 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        NSLog("Contents of \(cachesDirectory.path):")
+        let URLResourceKeys: [URLResourceKey] = [.contentModificationDateKey]
+        let directoryEnumerator = FileManager.default.enumerator(at: cachesDirectory, includingPropertiesForKeys: URLResourceKeys)!
+        for case let fileURL as URL in directoryEnumerator {
+            let date = (try? fileURL.resourceValues(forKeys: Set(URLResourceKeys)))?.contentModificationDate
+            NSLog("  \(date!) \(fileURL.absoluteString.dropFirst(cachesDirectory.absoluteString.count))")
+        }
+        
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing(_:))))
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackgroundNotification), name: UIApplication.didEnterBackgroundNotification, object: nil)
         apiKeyField.text = UserDefaults.standard.string(forKey: "apiKey")
