@@ -4,12 +4,15 @@
 //
 
 #import "BugsnagApiClient.h"
+
 #import "BugsnagConfiguration.h"
 #import "Bugsnag.h"
 #import "BugsnagKeys.h"
 #import "BugsnagLogger.h"
 #import "Private.h"
 #import "BSGJSONSerialization.h"
+
+#import <CommonCrypto/CommonCrypto.h>
 
 @interface BSGDelayOperation : NSOperation
 @end
@@ -50,7 +53,6 @@
 
 #pragma mark - Delivery
 
-
 - (void)sendItems:(NSUInteger)count
       withPayload:(NSDictionary *)payload
             toURL:(NSURL *)url
@@ -70,8 +72,12 @@
             }
             return;
         }
-        NSMutableURLRequest *request = [self prepareRequest:url headers:headers];
-
+        
+        NSMutableDictionary *mutableHeaders = [headers mutableCopy];
+        mutableHeaders[@"Bugsnag-Integrity"] = [NSString stringWithFormat:@"sha1 %@", [self SHA1HashStringWithData:jsonData]];
+        
+        NSMutableURLRequest *request = [self prepareRequest:url headers:mutableHeaders];
+        
         if ([NSURLSession class]) {
             NSURLSession *session = [self prepareSession];
             NSURLSessionTask *task = [session
@@ -135,6 +141,19 @@
         [request setValue:headers[key] forHTTPHeaderField:key];
     }
     return request;
+}
+
+- (NSString *)SHA1HashStringWithData:(NSData *)data {
+    if (!data) {
+        return nil;
+    }
+    unsigned char md[CC_SHA1_DIGEST_LENGTH];
+    CC_SHA1(data.bytes, (CC_LONG)data.length, md);
+    return [NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+            md[0], md[1], md[2], md[3], md[4],
+            md[5], md[6], md[7], md[8], md[9],
+            md[10], md[11], md[12], md[13], md[14],
+            md[15], md[16], md[17], md[18], md[19]];
 }
 
 - (void)dealloc {

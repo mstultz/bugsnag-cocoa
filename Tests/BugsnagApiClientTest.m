@@ -24,4 +24,10 @@
     }];
 }
 
+- (void)testSHA1HashStringWithData {
+    BugsnagApiClient *client = [[BugsnagApiClient alloc] init];
+    XCTAssertNil([client SHA1HashStringWithData:nil]);
+    XCTAssertEqualObjects([client SHA1HashStringWithData:[@"{\"foo\":\"bar\"}" dataUsingEncoding:NSUTF8StringEncoding]], @"a5e744d0164540d33b1d7ea616c28f2fa97e754a");
+}
+
 @end

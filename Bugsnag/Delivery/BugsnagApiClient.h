@@ -27,8 +27,9 @@ typedef void (^RequestCompletion)(NSUInteger reportCount, BOOL success, NSError 
           headers:(NSDictionary *)headers
      onCompletion:(RequestCompletion)onCompletion;
 
+- (NSString *)SHA1HashStringWithData:(NSData *)data;
+
 @property(readonly) NSOperationQueue *sendQueue;
 @property(readonly) BugsnagConfiguration *config;
-
 
 @end
