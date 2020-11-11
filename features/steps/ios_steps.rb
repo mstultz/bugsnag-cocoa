@@ -1,6 +1,7 @@
 When("I run {string}") do |event_type|
   steps %Q{
     Given the element "scenario_name" is present
+    And I clear the element "scenario_name"
     When I send the keys "#{event_type}" to the element "scenario_name"
     And I close the keyboard
     And I click the element "run_scenario"
@@ -30,10 +31,6 @@ When("I clear all persistent data") do
 end
 
 When("I close the keyboard") do
-  steps %Q{
-    Given the element "close_keyboard" is present
-    And I click the element "close_keyboard"
-  }
 end
 
 When("I configure Bugsnag for {string}") do |event_type|
@@ -50,7 +47,8 @@ When("I send the app to the background") do
 end
 
 When("I relaunch the app") do
-  MazeRunner.driver.launch_app
+  system("killall macOSTestApp")
+  MazeRunner.driver.get("macOSTestApp")
 end
 
 When("I clear the request queue") do
@@ -68,21 +66,21 @@ end
 # 4: The application is running in the foreground
 Then("The app is running in the foreground") do
   wait_for_true do
-    status = MazeRunner.driver.execute_script('mobile: queryAppState', {bundleId: "com.bugsnag.iOSTestApp"})
+    status = MazeRunner.driver.execute_script('mobile: queryAppState', {bundleId: "com.bugsnag.macOSTestApp"})
     status == 4
   end
 end
 
 Then("The app is running in the background") do
   wait_for_true do
-    status = MazeRunner.driver.execute_script('mobile: queryAppState', {bundleId: "com.bugsnag.iOSTestApp"})
+    status = MazeRunner.driver.execute_script('mobile: queryAppState', {bundleId: "com.bugsnag.macOSTestApp"})
     status == 3
   end
 end
 
 Then("The app is not running") do
   wait_for_true do
-    status = MazeRunner.driver.execute_script('mobile: queryAppState', {bundleId: "com.bugsnag.iOSTestApp"})
+    status = MazeRunner.driver.execute_script('mobile: queryAppState', {bundleId: "com.bugsnag.macOSTestApp"})
     status == 1
   end
 end
@@ -180,20 +178,8 @@ Then("the stacktrace contains methods:") do |table|
 end
 
 Then("the payload field {string} matches the test device model") do |field|
-  internal_names = {
-      "iPhone 7" => %w[iPhone9,1 iPhone9,2 iPhone9,3 iPhone9,4],
-      "iPhone 8" => %w[iPhone10,1 iPhone10,2 iPhone10,4 iPhone10,5],
-      "iPhone 11" => %w[iPhone12,1],
-      "iPhone 11 Pro" => %w[iPhone12,3],
-      "iPhone 11 Pro Max" => %w[iPhone12,5],
-      "iPhone X" => %w[iPhone10,3 iPhone10,6],
-      "iPhone XR" => ["iPhone11,8"],
-      "iPhone XS" => %w[iPhone11,2 iPhone11,4 iPhone11,8]
-  }
-  expected_model = MazeRunner.config.capabilities["device"]
-  valid_models = internal_names[expected_model]
   device_model = read_key_path(Server.current_request[:body], field)
-  assert_true(valid_models.include?(device_model), "The field #{device_model} did not match any of the list of expected fields")
+  assert_true(device_model.start_with?("Mac"), "Unexpected device model: #{device_model}")
 end
 
 Then("the thread information is valid for the event") do

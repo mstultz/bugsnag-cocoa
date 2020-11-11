@@ -10,16 +10,16 @@ Feature: Enabled error types
     # Give ignored report time to be processed
     And I wait for 2 seconds
     And I wait to receive 2 requests
-    Then the request is valid for the session reporting API version "1.0" for the "iOS Bugsnag Notifier" notifier
+    Then the request is valid for the session reporting API version "1.0" for the "OSX Bugsnag Notifier" notifier
     And I discard the oldest request
-    Then the request is valid for the session reporting API version "1.0" for the "iOS Bugsnag Notifier" notifier
+    Then the request is valid for the session reporting API version "1.0" for the "OSX Bugsnag Notifier" notifier
 
   Scenario: All Crash reporting is disabled but manual notification works
     # enabledErrorTypes = None, Generate a manual notification, crash
     When I run "DisableAllExceptManualExceptionsSendManualAndCrashScenario" and relaunch the app
     And I configure Bugsnag for "DisableAllExceptManualExceptionsSendManualAndCrashScenario"
     And I wait to receive a request
-    Then the request is valid for the error reporting API version "4.0" for the "iOS Bugsnag Notifier" notifier
+    Then the request is valid for the error reporting API version "4.0" for the "OSX Bugsnag Notifier" notifier
 
   Scenario: NSException Crash Reporting is disabled
     When I run "DisableNSExceptionScenario" and relaunch the app
@@ -27,7 +27,7 @@ Feature: Enabled error types
 
     # This received request is confirmation the scenario is running through
     And I wait to receive a request
-    Then the request is valid for the error reporting API version "4.0" for the "iOS Bugsnag Notifier" notifier
+    Then the request is valid for the error reporting API version "4.0" for the "OSX Bugsnag Notifier" notifier
     And the event "unhandled" is false
     And the payload field "events.0.exceptions.0.message" equals "DisableNSExceptionScenario - Handled"
 
@@ -37,9 +37,9 @@ Feature: Enabled error types
     # Give ignored SIGABRT report time to be processed
     And I wait for 2 seconds
     And I wait to receive 2 requests
-    Then the request is valid for the session reporting API version "1.0" for the "iOS Bugsnag Notifier" notifier
+    Then the request is valid for the session reporting API version "1.0" for the "OSX Bugsnag Notifier" notifier
     And I discard the oldest request
-    Then the request is valid for the session reporting API version "1.0" for the "iOS Bugsnag Notifier" notifier
+    Then the request is valid for the session reporting API version "1.0" for the "OSX Bugsnag Notifier" notifier
 
   Scenario: Mach Crash Reporting is disabled
     When I run "DisableMachExceptionScenario"
@@ -48,9 +48,9 @@ Feature: Enabled error types
     # Give ignored SIGSEGV report time to be processed
     And I wait for 2 seconds
     And I wait to receive 2 requests
-    Then the request is valid for the session reporting API version "1.0" for the "iOS Bugsnag Notifier" notifier
+    Then the request is valid for the session reporting API version "1.0" for the "OSX Bugsnag Notifier" notifier
     And I discard the oldest request
-    Then the request is valid for the session reporting API version "1.0" for the "iOS Bugsnag Notifier" notifier
+    Then the request is valid for the session reporting API version "1.0" for the "OSX Bugsnag Notifier" notifier
 
   Scenario: Signals Crash Reporting is disabled
     When I run "DisableSignalsExceptionScenario" and relaunch the app
