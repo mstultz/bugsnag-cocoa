@@ -9,7 +9,7 @@ let package = Package(
         .iOS("9.3"),
     ],
     products: [
-        .library(name: "Bugsnag", targets: ["Bugsnag"]),
+        .library(name: "Bugsnag", type: .dynamic, targets: ["Bugsnag"]),
     ],
     dependencies: [],
     targets: [
